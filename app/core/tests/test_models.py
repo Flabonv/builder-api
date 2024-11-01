@@ -67,3 +67,19 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(recipe), recipe.title)
+
+    def test_create_traildig(self):
+        """Test creating a trail dig is successful."""
+        user = get_user_model().objects.create_user(
+                'test@example.com',
+                'testpass123',
+        )
+        traildig = models.TrailDig.objects.create(
+            user=user,
+            title='Sample trail dig name',
+            time_minutes=180,
+            number_people=10,
+            description='Sample trail dig description',
+        )
+
+        self.assertEqual(str(traildig), traildig.title)

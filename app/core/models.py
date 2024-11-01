@@ -59,3 +59,35 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Dig(models.Model):
+    """Dig object"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    time_minutes = models.IntegerField()
+    number_people = models.IntegerField()
+    link = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.title
+
+
+class TrailDig(models.Model):
+    """Trail dig object"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    time_minutes = models.IntegerField()
+    number_people = models.IntegerField()
+    link = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.title
