@@ -30,6 +30,5 @@ urlpatterns = [
     ),
     path('api/user/', include('user.urls')),
     path('api/recipe/', include('recipe.urls')),
-    path('api/trail_dig/', include('trail_dig.urls')),
     path('api/traildig/', include('traildig.urls'))
 ]

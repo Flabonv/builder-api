@@ -14,7 +14,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """View for manage trail recipe APIs."""
     serializer_class = serializers.RecipeSerializer
     queryset = Recipe.objects.all()
-    authentification_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

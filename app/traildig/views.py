@@ -13,7 +13,7 @@ class TrailDigViewSet(viewsets.ModelViewSet):
     """View for manage trail dig APIs."""
     serializer_class = serializers.TrailDigSerializer
     queryset = TrailDig.objects.all()
-    authentification_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

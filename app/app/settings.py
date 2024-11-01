@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'user',
     'recipe',
-    'trail_dig',
     'traildig',
 ]
 
