@@ -44,6 +44,4 @@ class UserAdmin(BaseUserADmin):
 
 
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Recipe)
-admin.site.register(models.Dig)
 admin.site.register(models.TrailDig)

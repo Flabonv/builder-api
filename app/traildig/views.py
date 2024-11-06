@@ -11,7 +11,7 @@ from traildig import serializers
 
 class TrailDigViewSet(viewsets.ModelViewSet):
     """View for manage trail dig APIs."""
-    serializer_class = serializers.TrailDigSerializer
+    serializer_class = serializers.TrailDigDetailSerializer
     queryset = TrailDig.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -19,3 +19,14 @@ class TrailDigViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retrieve trail digs for authencated user."""
         return self.queryset.filter(user=self.request.user).order_by('-id')
+
+    def get_serializer_class(self):
+        """Return the serializer class for request."""
+        if self.action == 'list':
+            return serializers.TrailDigSerializer
+
+        return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Crate a new trail dig."""
+        serializer.save(user=self.request.user)

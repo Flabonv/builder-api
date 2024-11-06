@@ -13,3 +13,10 @@ class TrailDigSerializer(serializers.ModelSerializer):
         model = TrailDig
         fields = ['id', 'title', 'time_minutes', 'number_people', 'link']
         read_only_fields = ['id']
+
+
+class TrailDigDetailSerializer(TrailDigSerializer):
+    """Serializer for trail dig detail view."""
+
+    class Meta(TrailDigSerializer.Meta):
+        fields = TrailDigSerializer.Meta.fields + ['description']

@@ -1,2 +1,2 @@
-# recipe-app-api
-Recipe app api
+# traildig-app-api
+trail-dig app api
