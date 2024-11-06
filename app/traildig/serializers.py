@@ -3,7 +3,10 @@ Serializers for traildig APIs
 """
 from rest_framework import serializers
 
-from core.models import TrailDig
+from core.models import (
+    TrailDig,
+    Tag,
+)
 
 
 class TrailDigSerializer(serializers.ModelSerializer):
@@ -20,3 +23,12 @@ class TrailDigDetailSerializer(TrailDigSerializer):
 
     class Meta(TrailDigSerializer.Meta):
         fields = TrailDigSerializer.Meta.fields + ['description']
+
+
+class TagSerializer(serializers.ModelSerializer):
+    """Serializer for tag."""
+
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']
+        read_only_fields = ['id']

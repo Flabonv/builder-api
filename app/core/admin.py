@@ -45,3 +45,4 @@ class UserAdmin(BaseUserADmin):
 
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.TrailDig)
+admin.site.register(models.Tag)

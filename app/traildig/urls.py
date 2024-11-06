@@ -12,6 +12,7 @@ from traildig import views
 
 router = DefaultRouter()
 router.register('traildigs', views.TrailDigViewSet)
+router.register('tags', views.TagViewSet)
 
 app_name = 'traildig'
 
