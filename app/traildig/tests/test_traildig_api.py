@@ -8,7 +8,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import TrailDig
+from core.models import (
+        TrailDig,
+        Tag,
+)
 
 from traildig.serializers import (
         TrailDigSerializer,
@@ -191,3 +194,92 @@ class PrivateTrailDigAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(TrailDig.objects.filter(id=traildig.id).exists())
+
+    def test_create_traildig_with_new_tags(self):
+        """Test create traildig with new tag"""
+        payload = {
+            'title': "Soufflage automne",
+            'time_minutes': 120,
+            'number_people': 5,
+            'tags': [{'name': 'MSA'}, {'name': '2024'}]
+        }
+
+        res = self.client.post(TRAILDIGS_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        traildigs = TrailDig.objects.filter(user=self.user)
+        self.assertEqual(traildigs.count(), 1)
+        traildig = traildigs[0]
+        self.assertEqual(traildig.tags.count(), 2)
+        for tag in payload['tags']:
+            exists = traildig.tags.filter(
+                name=tag['name'],
+                user=self.user,
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_traildig_with_existing_tag(self):
+        """Test create dig with existing tag."""
+        tag_msa = Tag.objects.create(user=self.user, name='SDM')
+        payload = {
+            'title': "Drainage",
+            'time_minutes': 180,
+            'number_people': 3,
+            'tags': [{'name': 'SDM'}, {'name': '2025'}]
+        }
+
+        res = self.client.post(TRAILDIGS_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        traildigs = TrailDig.objects.filter(user=self.user)
+        self.assertEqual(traildigs.count(), 1)
+        traildig = traildigs[0]
+        self.assertEqual(traildig.tags.count(), 2)
+        self.assertIn(tag_msa, traildig.tags.all())
+        self.assertEqual(Tag.objects.filter(user=self.user).count(), 2)
+        for tag in payload['tags']:
+            exists = traildig.tags.filter(
+                name=tag['name'],
+                user=self.user,
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_tag_on_update(self):
+        """Test creating a tag when updating a recipe."""
+        traildig = create_traildig(user=self.user)
+
+        payload = {'tags': [{'name': 'bad shape'}]}
+        url = detail_url(traildig.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        new_tag = Tag.objects.get(user=self.user, name='bad shape')
+        self.assertIn(new_tag, traildig.tags.all())
+
+    def test_update_recipe_assign_tag(self):
+        """Assigning an existing tag when updating a trail dig."""
+        tag_2030 = Tag.objects.create(user=self.user, name='2030')
+        traildig = create_traildig(user=self.user)
+        traildig.tags.add(tag_2030)
+
+        tag_2020 = Tag.objects.create(user=self.user, name='2020')
+        payload = {'tags': [{'name': '2020'}]}
+        url = detail_url(traildig.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(tag_2020, traildig.tags.all())
+        self.assertNotIn(tag_2030, traildig.tags.all())
+
+    def test_clear_recipe_tags(self):
+        """Test clearing a traidigs tags."""
+        tag = Tag.objects.create(user=self.user, name='VBN')
+        traildig = create_traildig(user=self.user)
+        traildig.tags.add(tag)
+
+        payload = {'tags': []}
+        url = detail_url(traildig.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(traildig.tags.count(), 0)
