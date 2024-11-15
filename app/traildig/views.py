@@ -4,9 +4,14 @@ Views fro the trail dig APIs.
 from rest_framework import (
         viewsets,
         mixins,
+        status
 )
+from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+)
 
 from core.models import (
         TrailDig,
@@ -24,7 +29,7 @@ class TrailDigViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Retrieve trail digs for authencated user."""
-        return self.queryset.filter(user=self.request.user).order_by('-id')
+        return self.queryset.order_by('-id')
 
     def get_serializer_class(self):
         """Return the serializer class for request."""
@@ -37,6 +42,13 @@ class TrailDigViewSet(viewsets.ModelViewSet):
         """Crate a new trail dig."""
         serializer.save(user=self.request.user)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user != request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        return super().destroy(request, *args, **kwargs)
+
 
 class BaseTrailDigAttrViewSet(mixins.DestroyModelMixin,
                               mixins.UpdateModelMixin,
@@ -48,7 +60,16 @@ class BaseTrailDigAttrViewSet(mixins.DestroyModelMixin,
 
     def get_queryset(self):
         """Retrieve tag for authencated user."""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
+        return self.queryset.order_by('-name')
+
+    def get_permissions(self):
+        """Assign permissions based on action"""
+        if self.action in ['list', 'retrieve']:
+            self.permission_classes = [IsAuthenticated]
+        else:
+            self.permission_classes = [IsAdminUser]
+
+        return super().get_permissions()
 
 
 class TagViewSet(BaseTrailDigAttrViewSet):

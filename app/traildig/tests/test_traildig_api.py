@@ -81,15 +81,15 @@ class PrivateTrailDigAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_traildig_list_limited_to_user(self):
-        """Test dig list is limited to authenticated user"""
+    def test_unfiltered_traildig_list_contains_all_dig(self):
+        """Test dig list retrieves all digs."""
         other_user = create_user(email='other@example.com', password='test123')
-        create_traildig(user=other_user)
         create_traildig(user=self.user)
+        create_traildig(user=other_user)
 
         res = self.client.get(TRAILDIGS_URL)
 
-        traildigs = TrailDig.objects.filter(user=self.user)
+        traildigs = TrailDig.objects.all().order_by('-id')
         serializer = TrailDigSerializer(traildigs, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
@@ -174,7 +174,7 @@ class PrivateTrailDigAPITests(TestCase):
         traildig.refresh_from_db()
         self.assertEqual(traildig.user, self.user)
 
-    def test_delete_traildif(self):
+    def test_delete_traildig(self):
         """Test deleting a dig is successfull."""
         traildig = create_traildig(user=self.user)
 
@@ -192,11 +192,11 @@ class PrivateTrailDigAPITests(TestCase):
         url = detail_url(traildig.id)
         res = self.client.delete(url)
 
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertTrue(TrailDig.objects.filter(id=traildig.id).exists())
 
-    def test_create_traildig_with_new_tags(self):
-        """Test create traildig with new tag"""
+    def test_create_traildig_with_unexisting_tags(self):
+        """Test create traildig with unexisting tags fail."""
         payload = {
             'title': "Soufflage automne",
             'time_minutes': 120,
@@ -206,21 +206,12 @@ class PrivateTrailDigAPITests(TestCase):
 
         res = self.client.post(TRAILDIGS_URL, payload, format='json')
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        traildigs = TrailDig.objects.filter(user=self.user)
-        self.assertEqual(traildigs.count(), 1)
-        traildig = traildigs[0]
-        self.assertEqual(traildig.tags.count(), 2)
-        for tag in payload['tags']:
-            exists = traildig.tags.filter(
-                name=tag['name'],
-                user=self.user,
-            ).exists()
-            self.assertTrue(exists)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_traildig_with_existing_tag(self):
         """Test create dig with existing tag."""
         tag_msa = Tag.objects.create(user=self.user, name='SDM')
+        tag_msa = Tag.objects.create(user=self.user, name='2025')
         payload = {
             'title': "Drainage",
             'time_minutes': 180,
@@ -245,16 +236,14 @@ class PrivateTrailDigAPITests(TestCase):
             self.assertTrue(exists)
 
     def test_create_tag_on_update(self):
-        """Test creating a tag when updating a recipe."""
+        """Test updating a recipe with unexisting tag fails."""
         traildig = create_traildig(user=self.user)
 
         payload = {'tags': [{'name': 'bad shape'}]}
         url = detail_url(traildig.id)
         res = self.client.patch(url, payload, format='json')
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        new_tag = Tag.objects.get(user=self.user, name='bad shape')
-        self.assertIn(new_tag, traildig.tags.all())
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_recipe_assign_tag(self):
         """Assigning an existing tag when updating a trail dig."""

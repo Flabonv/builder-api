@@ -2,6 +2,7 @@
 Serializers for traildig APIs
 """
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from core.models import (
     TrailDig,
@@ -34,21 +35,24 @@ class TrailDigSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id']
 
-    def _get_or_create_tags(self, tags, traildig):
+    def _get_tags(self, tags, traildig):
         """Handle getting or creating tags as needed."""
         auth_user = self.context['request'].user
         for tag in tags:
-            tag_obj, created = Tag.objects.get_or_create(
-                user=auth_user,
-                **tag,
-            )
-            traildig.tags.add(tag_obj)
+            try:
+                tag_obj = Tag.objects.get(
+                    user=auth_user,
+                    **tag,
+                )
+                traildig.tags.add(tag_obj)
+            except Tag.DoesNotExist:
+                raise ValidationError(f"Tag {tag['name']} does not exist.")
 
     def create(self, validated_data):
         """Create a traildig"""
         tags = validated_data.pop('tags', [])
         traildig = TrailDig.objects.create(**validated_data)
-        self._get_or_create_tags(tags, traildig)
+        self._get_tags(tags, traildig)
 
         return traildig
 
@@ -57,7 +61,7 @@ class TrailDigSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags', None)
         if tags is not None:
             instance.tags.clear()
-            self._get_or_create_tags(tags, instance)
+            self._get_tags(tags, instance)
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

@@ -60,38 +60,38 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_tags_list_limited_to_user(self):
-        """Test dig list is limited to authenticated user"""
+    def test_unfiltered_tag_list_contains_all_dig(self):
+        """Test tag list contains all tags."""
         other_user = create_user(email='other@example.com')
-        Tag.objects.create(user=other_user, name='Fruity')
-        tag = Tag.objects.create(user=self.user, name='Confort food')
+        Tag.objects.create(user=other_user, name='MTL')
+        Tag.objects.create(user=self.user, name='VBN')
 
         res = self.client.get(TAGS_URL)
 
+        tags = Tag.objects.all().order_by('-name')
+        serializer = TagSerializer(tags, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['name'], tag.name)
-        self.assertEqual(res.data[0]['id'], tag.id)
+        self.assertEqual(res.data, serializer.data)
 
-    def test_update_tag(self):
-        """Test updating a tag"""
+    def test_update_tag_fails(self):
+        """Test updating a tag fails"""
         tag = Tag.objects.create(user=self.user, name='After Dinner')
 
         payload = {'name': 'Dessert'}
         url = detail_url(tag.id)
         res = self.client.patch(url, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         tag.refresh_from_db()
-        self.assertEqual(tag.name, payload['name'])
+        self.assertEqual(tag.name, 'After Dinner')
 
-    def test_delete_tag(self):
+    def test_delete_tag_fails(self):
         """test deleting a tag"""
         tag = Tag.objects.create(user=self.user, name='Breakfast')
 
         url = detail_url(tag.id)
         res = self.client.delete(url)
 
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         tags = Tag.objects.filter(user=self.user)
-        self.assertFalse(tags.exists())
+        self.assertTrue(tags.exists())
