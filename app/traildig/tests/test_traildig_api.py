@@ -201,12 +201,16 @@ class PrivateTrailDigAPITests(TestCase):
             'title': "Soufflage automne",
             'time_minutes': 120,
             'number_people': 5,
-            'tags': [{'name': 'MSA'}, {'name': '2024'}]
+            'tags': [{'name': 'MSA'}]
         }
 
         res = self.client.post(TRAILDIGS_URL, payload, format='json')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        traildigs = TrailDig.objects.all()
+        self.assertEqual(traildigs.count(), 0)
+        tags = Tag.objects.all()
+        self.assertEqual(tags.count(), 0)
 
     def test_create_traildig_with_existing_tag(self):
         """Test create dig with existing tag."""
@@ -236,7 +240,7 @@ class PrivateTrailDigAPITests(TestCase):
             self.assertTrue(exists)
 
     def test_create_tag_on_update(self):
-        """Test updating a recipe with unexisting tag fails."""
+        """Test updating a traildig with unexisting tag fails."""
         traildig = create_traildig(user=self.user)
 
         payload = {'tags': [{'name': 'bad shape'}]}
@@ -245,7 +249,7 @@ class PrivateTrailDigAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_recipe_assign_tag(self):
+    def test_update_traildig_assign_tag(self):
         """Assigning an existing tag when updating a trail dig."""
         tag_2030 = Tag.objects.create(user=self.user, name='2030')
         traildig = create_traildig(user=self.user)
@@ -260,7 +264,7 @@ class PrivateTrailDigAPITests(TestCase):
         self.assertIn(tag_2020, traildig.tags.all())
         self.assertNotIn(tag_2030, traildig.tags.all())
 
-    def test_clear_recipe_tags(self):
+    def test_clear_traildig_tags(self):
         """Test clearing a traidigs tags."""
         tag = Tag.objects.create(user=self.user, name='VBN')
         traildig = create_traildig(user=self.user)

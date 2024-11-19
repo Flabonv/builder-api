@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -57,6 +58,7 @@ class TrailDig(models.Model):
     number_people = models.IntegerField()
     link = models.CharField(max_length=255, blank=True)
     tags = models.ManyToManyField('Tag')
+    date_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title
