@@ -46,7 +46,7 @@ Each phase focuses on one TypeScript concept.
   *TS: discriminated unions (`{status: 'anonymous'} | {status: 'authenticated', …}`), typing context.*
 - [ ] **Phase 5 — Real data on the home page.** Projets = Tags, Corvées = TrailDigs.
   *TS: generic hooks, loading/error/success union.*
-  Backend: make reads public and update the two `test_auth_required` tests. Digs: `IsAuthenticatedOrReadOnly`. Tags: `AllowAny` for list in `get_permissions` (writes stay `IsAdminUser`). Option: since tags are managed in `/admin/`, drop the Update/Destroy mixins so the tag viewset is list-only (update the two `_fails` tests to expect 405).
+  Backend: ~~make reads public~~ (done during Phase 3: digs `IsAuthenticatedOrReadOnly`, tags `AllowAny` for list, writes stay `IsAdminUser`). Option: since tags are managed in `/admin/`, drop the Update/Destroy mixins so the tag viewset is list-only (update the two `_fails` tests to expect 405).
 - [ ] **Phase 6 — Routing.** React Router, "Voir tout" list pages, `/digs/:id` detail page.
   *TS: typing route params (`string | undefined`).*
 - [ ] **Phase 7 — Create/edit form.** Create and edit a dig, show DRF field errors.
@@ -56,3 +56,7 @@ Each phase focuses on one TypeScript concept.
 ### Known backend bug (fix in Phase 7)
 
 `TrailDigSerializer._get_tags` (`app/traildig/serializers.py`) looks tags up with `user=auth_user`, but tags are created by an admin. A non-admin creating or updating a dig with `tags: [{"name": "X"}]` gets `Tag X does not exist.` Fix: look the tag up by name only (as `validate()` already does).
+
+### Open decision (Phase 7): who can edit a dig?
+
+Any logged-in user can currently `PUT`/`PATCH` any dig; only `DELETE` checks the owner (`TrailDigViewSet.destroy`). Decide whether edits should be owner-only too (same check in `update`, plus a test), or stay open to everyone.

@@ -53,11 +53,37 @@ class PublicTrailDigAPITests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    def test_auth_required(self):
-        """Test auth is required to call API."""
+    def test_list_traildigs_public(self):
+        """Test listing trail digs does not require auth."""
+        create_traildig(user=create_user(email='user@example.com',
+                                         password='testpass123'))
+
         res = self.client.get(TRAILDIGS_URL)
 
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+
+    def test_retrieve_traildig_public(self):
+        """Test retrieving a trail dig does not require auth."""
+        traildig = create_traildig(user=create_user(
+            email='user@example.com', password='testpass123'))
+
+        res = self.client.get(detail_url(traildig.id))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_create_traildig_auth_required(self):
+        """Test auth is required to create a trail dig."""
+        payload = {
+            'title': 'Sample dig',
+            'time_minutes': 30,
+            'number_people': 2,
+        }
+
+        res = self.client.post(TRAILDIGS_URL, payload)
+
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertFalse(TrailDig.objects.exists())
 
 
 class PrivateTrailDigAPITests(TestCase):

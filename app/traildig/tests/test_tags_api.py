@@ -51,9 +51,20 @@ class PublicTagsApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    def test_auth_required(self):
-        """Test auth is required retrieving tags."""
+    def test_list_tags_public(self):
+        """Test listing tags does not require auth."""
+        Tag.objects.create(user=create_user(), name='Chomeuse')
+
         res = self.client.get(TAGS_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+
+    def test_update_tag_auth_required(self):
+        """Test auth is required to update a tag."""
+        tag = Tag.objects.create(user=create_user(), name='Chomeuse')
+
+        res = self.client.patch(detail_url(tag.id), {'name': 'Other'})
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 

@@ -9,7 +9,8 @@ from rest_framework import (
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import (
-    IsAuthenticated,
+    AllowAny,
+    IsAuthenticatedOrReadOnly,
     IsAdminUser,
 )
 
@@ -25,7 +26,7 @@ class TrailDigViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TrailDigDetailSerializer
     queryset = TrailDig.objects.all()
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         """Retrieve trail digs for authencated user."""
@@ -56,7 +57,7 @@ class BaseTrailDigAttrViewSet(mixins.DestroyModelMixin,
                               viewsets.GenericViewSet):
     """Base trail dig attribute view set."""
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         """Retrieve tag for authencated user."""
@@ -65,7 +66,7 @@ class BaseTrailDigAttrViewSet(mixins.DestroyModelMixin,
     def get_permissions(self):
         """Assign permissions based on action"""
         if self.action in ['list', 'retrieve']:
-            self.permission_classes = [IsAuthenticated]
+            self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAdminUser]
 
