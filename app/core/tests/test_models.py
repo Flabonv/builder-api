@@ -1,6 +1,7 @@
 """
 Tests for models.
 """
+from django.db import IntegrityError
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
@@ -77,3 +78,11 @@ class ModelTests(TestCase):
         tag = models.Tag.objects.create(user=user, name='Tag1')
 
         self.assertEqual(str(tag), tag.name)
+
+    def test_tag_name_unique(self):
+        """Test two tags cannot share the same name."""
+        user = create_user()
+        models.Tag.objects.create(user=user, name='Tag1')
+
+        with self.assertRaises(IntegrityError):
+            models.Tag.objects.create(user=user, name='Tag1')
