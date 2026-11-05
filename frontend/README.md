@@ -50,12 +50,13 @@ Each phase focuses on one TypeScript concept.
 - [ ] **Phase 6 — Routing.** React Router, "Voir tout" list pages, `/digs/:id` detail page.
   *TS: typing route params (`string | undefined`).*
 - [ ] **Phase 7 — Create/edit form.** Create and edit a dig, show DRF field errors.
-  *TS: form events, controlled inputs, naive-datetime helper (the API rejects timezones, so no `toISOString()`).*
+  *TS: form events, controlled inputs, naive-datetime helper.*
+  Dates: `USE_TZ = False`, so DRF silently converts `…Z` to naive UTC (the `validate_date_time` check never fires). `toISOString()` would shift local times by the UTC offset: send the local time as typed, without `Z`. Decide whether to remove the dead validator.
 - [ ] **Later.** Generate types from `/api/schema/` with `openapi-typescript` and compare with the hand-written ones; TanStack Query; Vitest; nginx/Docker deploy; upgrade Node to 22.
 
-### Known backend bug (fix in Phase 7)
+### Fixed backend bug (during Phase 3)
 
-`TrailDigSerializer._get_tags` (`app/traildig/serializers.py`) looks tags up with `user=auth_user`, but tags are created by an admin. A non-admin creating or updating a dig with `tags: [{"name": "X"}]` gets `Tag X does not exist.` Fix: look the tag up by name only (as `validate()` already does).
+`_get_tags` looked tags up with `user=auth_user`, so non-admins couldn't attach admin-created tags, and `create()` saved the dig *before* that lookup failed (400 returned, dig kept). Fixed: tags are looked up by name only, and `create()`/`update()` run in `transaction.atomic()`. Covered by three tests in `test_traildig_api.py`.
 
 ### Open decision (Phase 7): who can edit a dig?
 

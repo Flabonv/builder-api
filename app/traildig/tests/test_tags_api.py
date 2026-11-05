@@ -103,6 +103,20 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
+    def test_update_tag_duplicate_name_fails(self):
+        """Test renaming a tag to an existing name fails (admin)."""
+        admin = get_user_model().objects.create_superuser(
+            'admin@example.com', 'testpass123')
+        self.client.force_authenticate(admin)
+        Tag.objects.create(user=admin, name='Chomeuse')
+        tag = Tag.objects.create(user=admin, name='Zoobe')
+
+        res = self.client.patch(detail_url(tag.id), {'name': 'Chomeuse'})
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        tag.refresh_from_db()
+        self.assertEqual(tag.name, 'Zoobe')
+
     def test_update_tag_fails(self):
         """Test updating a tag fails"""
         tag = Tag.objects.create(user=self.user, name='After Dinner')

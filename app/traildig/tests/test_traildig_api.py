@@ -1,11 +1,14 @@
 """
 Tests for traildig APIs.
 """
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIClient
 
 from core.models import (
@@ -264,6 +267,55 @@ class PrivateTrailDigAPITests(TestCase):
                 user=self.user,
             ).exists()
             self.assertTrue(exists)
+
+    def test_create_traildig_with_other_users_tag(self):
+        """Test a user can use a tag created by another user (admin)."""
+        admin = create_user(email='admin@example.com', password='testpass123')
+        tag = Tag.objects.create(user=admin, name='Chomeuse')
+        payload = {
+            'title': 'Nettoyage',
+            'time_minutes': 90,
+            'number_people': 4,
+            'tags': [{'name': 'Chomeuse'}],
+        }
+
+        res = self.client.post(TRAILDIGS_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        traildig = TrailDig.objects.get(id=res.data['id'])
+        self.assertIn(tag, traildig.tags.all())
+
+    def test_create_traildig_rolled_back_on_tag_error(self):
+        """Test no trail dig is saved if attaching tags fails."""
+        payload = {
+            'title': 'Nettoyage',
+            'time_minutes': 90,
+            'number_people': 4,
+            'tags': [{'name': 'Chomeuse'}],
+        }
+        Tag.objects.create(user=self.user, name='Chomeuse')
+
+        with patch(
+            'traildig.serializers.TrailDigSerializer._get_tags',
+            side_effect=ValidationError('boom'),
+        ):
+            res = self.client.post(TRAILDIGS_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(TrailDig.objects.exists())
+
+    def test_update_with_unexisting_tag_keeps_tags(self):
+        """Test a failed tag update leaves existing tags untouched."""
+        tag = Tag.objects.create(user=self.user, name='VBN')
+        traildig = create_traildig(user=self.user)
+        traildig.tags.add(tag)
+
+        payload = {'tags': [{'name': 'does not exist'}]}
+        res = self.client.patch(
+            detail_url(traildig.id), payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(tag, traildig.tags.all())
 
     def test_create_tag_on_update(self):
         """Test updating a traildig with unexisting tag fails."""

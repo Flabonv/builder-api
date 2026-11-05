@@ -44,5 +44,11 @@ class UserAdmin(BaseUserADmin):
 
 
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.TrailDig)
+
+
+@admin.register(models.TrailDig)
+class TrailDigAdmin(admin.ModelAdmin):
+    filter_horizontal = ['tags']
+
+
 admin.site.register(models.Tag)

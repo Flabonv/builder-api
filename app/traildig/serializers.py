@@ -1,7 +1,7 @@
 """
 Serializers for traildig APIs
 """
-from django.db import models
+from django.db import models, transaction
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -34,9 +34,20 @@ class TagSerializer(serializers.ModelSerializer):
     #        total=models.Sum('time_minutes'))['total'] or 0
 
 
+class TrailDigTagSerializer(TagSerializer):
+    """Tag nested in a trail dig: refers to an existing tag by name.
+
+    The unique check on name is removed here, since sending the name of
+    an existing tag is exactly how a tag is attached to a dig.
+    """
+
+    class Meta(TagSerializer.Meta):
+        extra_kwargs = {'name': {'validators': []}}
+
+
 class TrailDigSerializer(serializers.ModelSerializer):
     """Serializer for trail digs."""
-    tags = TagSerializer(many=True, required=False)
+    tags = TrailDigTagSerializer(many=True, required=False)
 
     class Meta:
         model = TrailDig
@@ -52,18 +63,17 @@ class TrailDigSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def _get_tags(self, tags, traildig):
-        """Handle getting tags."""
-        auth_user = self.context['request'].user
-        for tag in tags:
-            try:
-                tag_obj = Tag.objects.get(
-                    user=auth_user,
-                    **tag,
-                )
-                traildig.tags.add(tag_obj)
-            except Tag.DoesNotExist:
-                raise ValidationError(f"Tag {tag['name']} does not exist.")
+        """Attach existing tags, looked up by name, to the trail dig.
 
+        Tags are created by admins, so they are not filtered by user.
+        """
+        for tag in tags:
+            tag_obj = Tag.objects.filter(name=tag['name']).first()
+            if tag_obj is None:
+                raise ValidationError(f"Tag {tag['name']} does not exist.")
+            traildig.tags.add(tag_obj)
+
+    @transaction.atomic
     def create(self, validated_data):
         """Create a traildig"""
         tags = validated_data.pop('tags', [])
@@ -72,6 +82,7 @@ class TrailDigSerializer(serializers.ModelSerializer):
 
         return traildig
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         """Update a traildig"""
         tags = validated_data.pop('tags', None)
@@ -89,9 +100,7 @@ class TrailDigSerializer(serializers.ModelSerializer):
         """Custom validations."""
         tags = data.get('tags', [])
         for tag in tags:
-            try:
-                Tag.objects.get(name=tag['name'])
-            except Tag.DoesNotExist:
+            if not Tag.objects.filter(name=tag['name']).exists():
                 raise ValidationError(f"Tag {tag['name']} does not exist.")
 
         return data
