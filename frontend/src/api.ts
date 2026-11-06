@@ -1,4 +1,4 @@
-import type { NewTrailDig, Tag, TrailDig, TrailDigDetail } from "./types/api";
+import { type User, type AuthToken, type LoginPayload, type NewTrailDig, type Tag, type TrailDig, type TrailDigDetail } from "./types/api";
 
 export class ApiError extends Error {
   status: number;
@@ -62,8 +62,24 @@ export const getTrailDig = (id: number) => apiFetch<TrailDigDetail>(`/api/traild
 
 export const createTrailDig = (payload: NewTrailDig, token: string) =>
     apiFetch<TrailDigDetail>(
-        `/api/traildig/traildigs/`, {
+        `/api/traildig/traildigs/`,
+        {
             method: "POST",
             token,
             body: payload,
         });
+
+export const login = (payload: LoginPayload) => apiFetch<AuthToken>(
+    `/api/user/token/`,
+    {
+        method: "POST",
+        body: payload,
+    }
+);
+
+export const getMe = (token: string) => apiFetch<User>(
+    "/api/user/me/",
+    {
+    token,
+    }
+);

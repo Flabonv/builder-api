@@ -22,3 +22,17 @@ export type NewTrailDig =
   Omit<TrailDigDetail, "link" | "tags" | "id" | "description"> &
   Partial<Pick<TrailDigDetail, "link" | "description">> &
   { tags?: Pick<Tag, "name">[]; };
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface AuthToken {
+  token: string;
+}
+
+export interface User {
+  email: string;
+  name: string;
+}

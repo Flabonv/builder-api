@@ -40,7 +40,7 @@ Each phase focuses on one TypeScript concept.
   *TS: typing props, `interface`, optional fields, `children`.*
 - [x] **Phase 2 — API types by hand.** `src/types/api.ts`: `Tag`, `TrailDig`, `TrailDigDetail`, `User`, payload types, written from the DRF serializers.
   *TS: `interface` vs `type`, `extends`, `Omit` / `Partial` / `Pick`.*
-- [ ] **Phase 3 — Typed API client.** One `apiFetch<T>()` that adds the base URL and token and turns DRF errors (`{field: string[]}`) into a typed error.
+- [x] **Phase 3 — Typed API client.** One `apiFetch<T>()` that adds the base URL and token and turns DRF errors (`{field: string[]}`) into a typed error.
   *TS: generics, `unknown` vs `any`, narrowing, error classes.*
 - [ ] **Phase 4 — Login.** Login page, token in `localStorage`, `AuthContext`.
   *TS: discriminated unions (`{status: 'anonymous'} | {status: 'authenticated', …}`), typing context.*

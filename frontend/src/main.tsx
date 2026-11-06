@@ -8,3 +8,16 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+/*getMe(
+  "token"
+)
+  .then((Me) => console.log(Me))
+  .catch((err: unknown) => {
+    if (err instanceof ApiError) {
+      console.log(err.status, err.detail, err.fields);   // 404 "Not found." {}
+    } else {
+      console.log("not an API error:", err);
+    }
+  });
+*/
