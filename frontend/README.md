@@ -42,7 +42,7 @@ Each phase focuses on one TypeScript concept.
   *TS: `interface` vs `type`, `extends`, `Omit` / `Partial` / `Pick`.*
 - [x] **Phase 3 — Typed API client.** One `apiFetch<T>()` that adds the base URL and token and turns DRF errors (`{field: string[]}`) into a typed error.
   *TS: generics, `unknown` vs `any`, narrowing, error classes.*
-- [ ] **Phase 4 — Login.** Login page, token in `localStorage`, `AuthContext`.
+- [x] **Phase 4 — Login.** Login page, token in `localStorage`, `AuthContext`.
   *TS: discriminated unions (`{status: 'anonymous'} | {status: 'authenticated', …}`), typing context.*
 - [ ] **Phase 5 — Real data on the home page.** Projets = Tags, Corvées = TrailDigs.
   *TS: generic hooks, loading/error/success union.*
@@ -53,6 +53,10 @@ Each phase focuses on one TypeScript concept.
   *TS: form events, controlled inputs, naive-datetime helper.*
   Dates: `USE_TZ = False`, so DRF silently converts `…Z` to naive UTC (the `validate_date_time` check never fires). `toISOString()` would shift local times by the UTC offset: send the local time as typed, without `Z`. Decide whether to remove the dead validator.
 - [ ] **Later.** Generate types from `/api/schema/` with `openapi-typescript` and compare with the hand-written ones; TanStack Query; Vitest; nginx/Docker deploy; upgrade Node to 22.
+
+### Exercises for later
+
+- **LoginForm `submitting` flag:** add a `useState` boolean set to `true` while `login()` is in flight (and back to `false` in a `finally`). Use it to disable the submit button (`disabled={submitting}`) so a double-click can't send two login requests. Optionally show "Connexion…" as the button text meanwhile.
 
 ### Fixed backend bug (during Phase 3)
 

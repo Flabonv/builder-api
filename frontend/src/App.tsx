@@ -8,19 +8,19 @@ export default function App() {
     { title: "Zoobé", meta: "80h réalisées" },
   ];
   const digs: ItemProps[] = [
-  {
-    title: "Gros jump dans la chômeuse",
-    description: "Construire un gros jump pour sender.",
-    meta: "3 bénévoles",
-    detail: "samedi le 26 octobre.",
-  },
-  {
-    title: "Flatter les Kick",
-    description: "Plusieurs kicks ont des ruts.",
-    meta: "1 bénévoles",
-    detail: "dimanche le 29 octobre.",
-  },
-];
+    {
+      title: "Gros jump dans la chômeuse",
+      description: "Construire un gros jump pour sender.",
+      meta: "3 bénévoles",
+      detail: "samedi le 26 octobre.",
+    },
+    {
+      title: "Flatter les Kick",
+      description: "Plusieurs kicks ont des ruts.",
+      meta: "1 bénévoles",
+      detail: "dimanche le 29 octobre.",
+    },
+  ];
   return (
     <div className="page">
       <Nav />

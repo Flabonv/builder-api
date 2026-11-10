@@ -9,6 +9,7 @@
   --color-border: #daddd0;
   --color-primary: #263d32;
   --color-muted: #687167;
+  --color-danger: #a8402f;
 
   /* Fonts */
   --font-serif: "Lora", Georgia, serif;
@@ -73,11 +74,49 @@ p { margin: 0; }
 }
 
 .menu { display: flex; align-items: center; gap: 36px; white-space: nowrap; }
+.menu span,
 .menu a {
   font-size: 14px;
   line-height: normal;
   color: var(--color-primary);
   text-decoration: none;
+}
+
+/* ---------- Auth area (right end of the nav) ---------- */
+.nav__auth {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-left: 36px;
+  border-left: 1px solid var(--color-border);
+}
+.nav__auth:empty { display: none; } /* "checking": nothing to show */
+
+.login { position: relative; display: flex; align-items: center; gap: 8px; }
+.login__input {
+  width: 180px;
+  height: 44px;
+  padding: 0 16px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+}
+.login__input::placeholder { color: var(--color-muted); }
+.login__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+/* Floats under the form so an error doesn't change the nav's height */
+.login__error {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 16px;
+  font-size: 12px;
+  color: var(--color-danger);
 }
 
 /* ---------- Portal section ---------- */
@@ -115,6 +154,7 @@ p { margin: 0; }
 .box__title p { font-size: 14px; line-height: 1.5; color: var(--color-muted); }
 
 /* ---------- Button ---------- */
+.menu button,
 .btn {
   display: inline-flex;
   align-items: center;
@@ -195,12 +235,19 @@ p { margin: 0; }
 /* ---------- Responsive (not in the Figma file) ---------- */
 @media (max-width: 1100px) {
   :root { --page-padding-x: 32px; }
+  .nav { height: auto; min-height: 104px; padding-block: 20px; flex-wrap: wrap; gap: 16px; }
+  .menu { flex-wrap: wrap; row-gap: 16px; }
   .portal__boxes { flex-direction: column; }
   .box { width: 100%; }
 }
 @media (max-width: 640px) {
   :root { --page-padding-x: 20px; }
   .nav { height: auto; padding-block: 20px; flex-direction: column; gap: 16px; }
+  .menu { width: 100%; gap: 16px 24px; }
+  .nav__auth { width: 100%; padding-left: 0; border-left: none; }
+  .login { width: 100%; flex-wrap: wrap; }
+  .login__input { flex: 1 1 140px; width: auto; min-width: 0; }
+  .login__error { position: static; width: 100%; padding-left: 16px; }
   .box { padding: 20px; }
   .box__header { flex-direction: column; align-items: flex-start; gap: 16px; }
   .item { flex-direction: column; align-items: flex-start; }
