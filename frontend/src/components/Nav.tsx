@@ -1,4 +1,8 @@
+import { useAuth } from "../auth/AuthContext";
+import LoginForm from "./LoginForm";
+
 export default function Nav() {
+  const { state, logout } = useAuth();
     return (
       <nav className="nav">
         <a className="brand" href="#">
@@ -22,6 +26,15 @@ export default function Nav() {
             <a href="#">Projets</a>
             <a href="#">Corvées</a>
             <a href="#">Contact</a>
+            <div className="nav__auth">
+              {state.status === "anonymous" && <LoginForm />}
+              {state.status === "authenticated" && (
+                <>
+                <span>Bonjour {state.user.name}</span>
+                <button type="button" onClick={logout}>Déconnexion</button>
+                </>
+              )}
+            </div>
         </div>
       </nav>
     );
