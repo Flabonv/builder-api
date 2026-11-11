@@ -1,4 +1,4 @@
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../auth/useAuth";
 import LoginForm from "./LoginForm";
 
 export default function Nav() {

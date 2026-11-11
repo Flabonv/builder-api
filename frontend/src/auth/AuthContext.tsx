@@ -1,20 +1,8 @@
-import type { User } from "../types/api";
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { login as apiLogin, getMe } from "../api";
-
-export type AuthState =
-  | { status: "checking" }
-  | { status: "anonymous" }
-  | { status: "authenticated"; token: string ; user: User}
-
-export interface AuthContextValue {
-  state: AuthState;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
+import { AuthContext } from "./useAuth";
+import type { AuthState } from "./useAuth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>(() =>
@@ -60,13 +48,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-// 4. The hook that components use
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used inside <AuthProvider>");
-  }
-  return ctx;
 }
