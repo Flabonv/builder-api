@@ -46,7 +46,7 @@ Each phase focuses on one TypeScript concept.
   *TS: discriminated unions (`{status: 'anonymous'} | {status: 'authenticated', …}`), typing context.*
 - [x] **Phase 5 — Real data on the home page.** Projets = Tags, Corvées = TrailDigs.
   *TS: generic hooks, loading/error/success union.*
-  Backend: ~~make reads public~~ (done during Phase 3: digs `IsAuthenticatedOrReadOnly`, tags `AllowAny` for list, writes stay `IsAdminUser`). Option: since tags are managed in `/admin/`, drop the Update/Destroy mixins so the tag viewset is list-only (update the two `_fails` tests to expect 405).
+  Backend: ~~make reads public~~ (done during Phase 3: digs `IsAuthenticatedOrReadOnly`, tags `AllowAny` for list, writes stay `IsAdminUser`). ~~Tag viewset list-only~~ (done: tags are managed in `/admin/`; `/tags/<id>/` no longer exists → 404, POST `/tags/` → 405).
 - [ ] **Phase 6 — Routing.** React Router, "Voir tout" list pages, `/digs/:id` detail page.
   *TS: typing route params (`string | undefined`).*
 - [ ] **Phase 7 — Create/edit form.** Create and edit a dig, show DRF field errors.

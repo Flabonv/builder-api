@@ -11,7 +11,6 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticatedOrReadOnly,
-    IsAdminUser,
 )
 
 from core.models import (
@@ -51,26 +50,18 @@ class TrailDigViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class BaseTrailDigAttrViewSet(mixins.DestroyModelMixin,
-                              mixins.UpdateModelMixin,
-                              mixins.ListModelMixin,
+class BaseTrailDigAttrViewSet(mixins.ListModelMixin,
                               viewsets.GenericViewSet):
-    """Base trail dig attribute view set."""
+    """Base trail dig attribute view set.
+
+    List-only and public: tags are created, renamed and deleted in /admin/.
+    """
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdminUser]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        """Retrieve tag for authencated user."""
+        """Retrieve all tags, ordered by name."""
         return self.queryset.order_by('-name')
-
-    def get_permissions(self):
-        """Assign permissions based on action"""
-        if self.action in ['list', 'retrieve']:
-            self.permission_classes = [AllowAny]
-        else:
-            self.permission_classes = [IsAdminUser]
-
-        return super().get_permissions()
 
 
 class TagViewSet(BaseTrailDigAttrViewSet):
