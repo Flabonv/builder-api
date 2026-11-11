@@ -20,8 +20,12 @@ TAGS_URL = reverse('traildig:tag-list')
 
 
 def detail_url(tag_id):
-    """Create and return tag detail URL."""
-    return reverse('traildig:tag-detail', args=[tag_id])
+    """Return the tag detail path.
+
+    Built by hand: the viewset is list-only, so the router has no
+    'tag-detail' route to reverse().
+    """
+    return f'{TAGS_URL}{tag_id}/'
 
 
 def create_user(email='user@example.com', password='testpass123'):
@@ -60,14 +64,6 @@ class PublicTagsApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
 
-    def test_update_tag_auth_required(self):
-        """Test auth is required to update a tag."""
-        tag = Tag.objects.create(user=create_user(), name='Chomeuse')
-
-        res = self.client.patch(detail_url(tag.id), {'name': 'Other'})
-
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
 
 class PrivateTagsApiTests(TestCase):
     """Test authenticated api requests"""
@@ -103,42 +99,28 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_update_tag_duplicate_name_fails(self):
-        """Test renaming a tag to an existing name fails (admin)."""
+    def test_tag_write_endpoints_do_not_exist(self):
+        """Test tags can't be created, updated or deleted via the API,
+        even by an admin (tags are managed in /admin/)."""
         admin = get_user_model().objects.create_superuser(
             'admin@example.com', 'testpass123')
         self.client.force_authenticate(admin)
-        Tag.objects.create(user=admin, name='Chomeuse')
         tag = Tag.objects.create(user=admin, name='Zoobe')
+        url = detail_url(tag.id)
 
-        res = self.client.patch(detail_url(tag.id), {'name': 'Chomeuse'})
+        res_create = self.client.post(TAGS_URL, {'name': 'Chomeuse'})
+        res_patch = self.client.patch(url, {'name': 'Other'})
+        res_put = self.client.put(url, {'name': 'Other'})
+        res_delete = self.client.delete(url)
 
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            res_create.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(res_patch.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(res_put.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(res_delete.status_code, status.HTTP_404_NOT_FOUND)
         tag.refresh_from_db()
         self.assertEqual(tag.name, 'Zoobe')
-
-    def test_update_tag_fails(self):
-        """Test updating a tag fails"""
-        tag = Tag.objects.create(user=self.user, name='After Dinner')
-
-        payload = {'name': 'Dessert'}
-        url = detail_url(tag.id)
-        res = self.client.patch(url, payload)
-
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        tag.refresh_from_db()
-        self.assertEqual(tag.name, 'After Dinner')
-
-    def test_delete_tag_fails(self):
-        """test deleting a tag"""
-        tag = Tag.objects.create(user=self.user, name='Breakfast')
-
-        url = detail_url(tag.id)
-        res = self.client.delete(url)
-
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        tags = Tag.objects.filter(user=self.user)
-        self.assertTrue(tags.exists())
+        self.assertEqual(Tag.objects.count(), 1)
 
     def test_traildigs_hours_computed_for_biketrail(self):
         """Test the computing of trail dig hours per biketrail."""
