@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { ApiError } from "../api.ts"
-import { useAuth } from "../auth/AuthContext.tsx";
+import { useAuth } from "../auth/useAuth.ts";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");

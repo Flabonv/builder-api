@@ -1,33 +1,27 @@
 import Nav from "./components/Nav";
-import type { ItemProps } from "./components/Item";
 import Box from "./components/Box";
+import { getTags, getTrailDigs } from "./api";
+import { digToItem, tagToItem, upcomingDigs } from "./mappers";
+import { useApi } from "./hooks/useApi";
 
 export default function App() {
-  const projects: ItemProps[] = [
-    { title: "Chômeuse", meta: "60h réalisées" },
-    { title: "Zoobé", meta: "80h réalisées" },
-  ];
-  const digs: ItemProps[] = [
-    {
-      title: "Gros jump dans la chômeuse",
-      description: "Construire un gros jump pour sender.",
-      meta: "3 bénévoles",
-      detail: "samedi le 26 octobre.",
-    },
-    {
-      title: "Flatter les Kick",
-      description: "Plusieurs kicks ont des ruts.",
-      meta: "1 bénévoles",
-      detail: "dimanche le 29 octobre.",
-    },
-  ];
+  const tags = useApi(getTags);
+  const digs = useApi(getTrailDigs);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
   return (
     <div className="page">
       <Nav />
       <main className="portal">
         <div className="portal__boxes">
-          <Box title="Projets" subtitle="Les chantiers en cours" items={projects} />
-          <Box title="Digs" subtitle="Les corvées à venir" items={digs} />
+          {tags.status === "loading" && <p>Chargement</p>}
+          {tags.status === "error" && <p>{tags.message}</p>}
+          {tags.status === "success" && <Box title="Projets" subtitle="Les chantiers en cours" items={tags.data.map(tagToItem)} />}
+
+          {digs.status === "loading" && <p>Chargement</p>}
+          {digs.status === "error" && <p>{digs.message}</p>}
+          {digs.status === "success" && <Box title="Digs" subtitle="Les corvées à venir" items={
+            upcomingDigs(digs.data, today).map(digToItem)
+            } />}
         </div>
       </main>
     </div>

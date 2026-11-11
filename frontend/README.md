@@ -44,7 +44,7 @@ Each phase focuses on one TypeScript concept.
   *TS: generics, `unknown` vs `any`, narrowing, error classes.*
 - [x] **Phase 4 — Login.** Login page, token in `localStorage`, `AuthContext`.
   *TS: discriminated unions (`{status: 'anonymous'} | {status: 'authenticated', …}`), typing context.*
-- [ ] **Phase 5 — Real data on the home page.** Projets = Tags, Corvées = TrailDigs.
+- [x] **Phase 5 — Real data on the home page.** Projets = Tags, Corvées = TrailDigs.
   *TS: generic hooks, loading/error/success union.*
   Backend: ~~make reads public~~ (done during Phase 3: digs `IsAuthenticatedOrReadOnly`, tags `AllowAny` for list, writes stay `IsAdminUser`). Option: since tags are managed in `/admin/`, drop the Update/Destroy mixins so the tag viewset is list-only (update the two `_fails` tests to expect 405).
 - [ ] **Phase 6 — Routing.** React Router, "Voir tout" list pages, `/digs/:id` detail page.
@@ -57,6 +57,7 @@ Each phase focuses on one TypeScript concept.
 ### Exercises for later
 
 - **LoginForm `submitting` flag:** add a `useState` boolean set to `true` while `login()` is in flight (and back to `false` in a `finally`). Use it to disable the submit button (`disabled={submitting}`) so a double-click can't send two login requests. Optionally show "Connexion…" as the button text meanwhile.
+- **Loading/error inside the Box:** always render both Boxes (title/subtitle are known up front) so the layout doesn't jump. Add `message?: string` to `BoxProps`; in Box, pick the body with `if`/`else` into a `let body: ReactNode` (message → "nothing to show" → list). In App, compute `items` (`[]` unless success) and `message` per Loadable; optionally a generic `loadableMessage<T>(l: Loadable<T>): string | undefined` helper. Style with a muted `.box__message` (danger color for errors).
 
 ### Fixed backend bug (during Phase 3)
 
