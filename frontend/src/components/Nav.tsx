@@ -1,11 +1,12 @@
 import { useAuth } from "../auth/useAuth";
 import LoginForm from "./LoginForm";
+import { Link } from "react-router";
 
 export default function Nav() {
   const { state, logout } = useAuth();
     return (
       <nav className="nav">
-        <a className="brand" href="#">
+        <Link className="brand" to="/">
             <svg
               className="brand__symbol"
               viewBox="0 0 42 42"
@@ -21,11 +22,11 @@ export default function Nav() {
               <p className="brand__name">Dig DH</p>
               <p className="brand__tagline">Corvées dans le DH</p>
             </div>
-        </a>
+        </Link>
         <div className="menu">
-            <a href="#">Projets</a>
-            <a href="#">Corvées</a>
-            <a href="#">Contact</a>
+            {/*<Link to="#">Projets</a>*/}
+            <Link to="digs">Corvées</Link>
+            {/*<Link to="#">Contact</Link>*/}
             <div className="nav__auth">
               {state.status === "anonymous" && <LoginForm />}
               {state.status === "authenticated" && (

@@ -16,6 +16,7 @@ export function digToItem(dig: TrailDig): ItemProps {
     title: dig.title,
     meta: `${dig.number_people} bénévole(s)`,
     detail: digDate,
+    href: `/digs/${dig.id}`
  };
  return item;
 }

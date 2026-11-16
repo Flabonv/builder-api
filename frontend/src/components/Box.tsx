@@ -16,7 +16,7 @@ export default function Box({title, subtitle, href, items}: BoxProps) {
             <h2>{title}</h2>
             <p>{subtitle}</p>
           </div>
-          <Button href={href}>Voir tout</Button>
+          {href && <Button href={href}>Voir tout</Button>}
         </header>
         {items.length === 0 ? <p>Aucune donnée à afficher</p> : <div className="list"> {items.map((item) => <Item key={item.id} {...item} />)} </div>}
       </section>

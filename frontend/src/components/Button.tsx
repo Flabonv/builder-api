@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router";
+
 
 interface ButtonProps {
-    href?: string;
+    href: string;
     children: ReactNode;
 }
 
 export default function Button({href, children}: ButtonProps) {
     return (
-        <a className="btn" href={href}>
+        <Link className="btn" to={href}>
             {children}
             <svg
                 className="btn__icon"
@@ -20,6 +22,6 @@ export default function Button({href, children}: ButtonProps) {
                 aria-hidden="true">
                     <path d="M7 17 17 7M8 7h9v9"/>
             </svg>
-        </a>
+        </Link>
     );
 }

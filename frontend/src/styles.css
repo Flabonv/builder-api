@@ -255,3 +255,13 @@ p { margin: 0; }
   .footer { flex-direction: column; align-items: flex-start; gap: 20px; white-space: normal; }
   .footer__links { flex-wrap: wrap; }
 }
+
+.item-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.item-link:hover .item {
+  border-color: var(--color-primary);
+}
