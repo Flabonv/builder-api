@@ -1,29 +1,27 @@
+import { BrowserRouter, Routes, Route, Outlet/*, Link */} from "react-router";
 import Nav from "./components/Nav";
-import Box from "./components/Box";
-import { getTags, getTrailDigs } from "./api";
-import { digToItem, tagToItem, upcomingDigs } from "./mappers";
-import { useApi } from "./hooks/useApi";
+import HomePage from "./pages/HomePage";
 
-export default function App() {
-  const tags = useApi(getTags);
-  const digs = useApi(getTrailDigs);
-  const today = new Date(); today.setHours(0, 0, 0, 0);
+function Layout() {
   return (
     <div className="page">
       <Nav />
-      <main className="portal">
-        <div className="portal__boxes">
-          {tags.status === "loading" && <p>Chargement</p>}
-          {tags.status === "error" && <p>{tags.message}</p>}
-          {tags.status === "success" && <Box title="Projets" subtitle="Les chantiers en cours" items={tags.data.map(tagToItem)} />}
-
-          {digs.status === "loading" && <p>Chargement</p>}
-          {digs.status === "error" && <p>{digs.message}</p>}
-          {digs.status === "success" && <Box title="Digs" subtitle="Les corvées à venir" items={
-            upcomingDigs(digs.data, today).map(digToItem)
-            } />}
-        </div>
-      </main>
+      <Outlet /> {/* the matched child page renders here */}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="digs" element={<main className="portal"><h2>Corvées</h2></main>} />
+          <Route path="digs/:id" element={<main className="portal"><h2>Détail de corvée</h2></main>} />
+          <Route path="*" element={<main className="portal"><h2>Introuvable</h2></main>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
