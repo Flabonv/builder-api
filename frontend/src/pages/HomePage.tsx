@@ -12,12 +12,12 @@ export default function HomePage() {
         <div className="portal__boxes">
           {tags.status === "loading" && <p>Chargement</p>}
           {tags.status === "error" && <p>{tags.message}</p>}
-          {tags.status === "success" && <Box title="Projets" subtitle="Les chantiers en cours" items={tags.data.map(tagToItem)} />}
+          {tags.status === "success" && <Box title="Projets" subtitle="Les chantiers en cours" items={tags.data.map(tagToItem).slice(0, 5)} />}
 
           {digs.status === "loading" && <p>Chargement</p>}
           {digs.status === "error" && <p>{digs.message}</p>}
           {digs.status === "success" && <Box title="Digs" subtitle="Les corvées à venir" href="/digs" items={
-            upcomingDigs(digs.data, today).map(digToItem)
+            upcomingDigs(digs.data, today).map(digToItem).slice(0, 5)
             } />}
         </div>
       </main>

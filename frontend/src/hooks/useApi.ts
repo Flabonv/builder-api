@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,  } from "react";
 import { ApiError } from "../api";
+import type { DependencyList } from "react";
 
 export type Loadable<T> =
   | {status: "loading"}
   | {status: "error"; message: string}
   | {status: "success"; data: T};
 
-export function useApi<T>(fetcher: () => Promise<T>): Loadable<T> {
+export function useApi<T>
+(fetcher: () => Promise<T>, deps: DependencyList = []): Loadable<T> {
     const [loaded, set] = useState<Loadable<T>>({status: "loading"});
     useEffect(() => {
+      set({status: "loading"});
       let ignore = false;
       fetcher()
         .then((result) => {
@@ -26,8 +29,8 @@ export function useApi<T>(fetcher: () => Promise<T>): Loadable<T> {
           }
         });
       return () => {ignore = true;};
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetcher must be stable (a module-level function)
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps are provided by the caller
+    }, deps);
 
     return loaded;
   }

@@ -3,7 +3,7 @@ import Item, { type ItemProps } from "./Item";
 
 interface BoxProps {
     title: string;
-    subtitle: string;
+    subtitle?: string;
     href?: string;
     items: ItemProps[]
 }
@@ -14,7 +14,7 @@ export default function Box({title, subtitle, href, items}: BoxProps) {
         <header className="box__header">
           <div className="box__title">
             <h2>{title}</h2>
-            <p>{subtitle}</p>
+            {subtitle && <p>{subtitle}</p>}
           </div>
           {href && <Button href={href}>Voir tout</Button>}
         </header>
