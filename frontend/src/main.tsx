@@ -18,7 +18,7 @@ createRoot(document.getElementById('root')!).render(
   .then((Me) => console.log(Me))
   .catch((err: unknown) => {
     if (err instanceof ApiError) {
-      console.log(err.status, err.detail, err.fields);   // 404 "Not found." {}
+      console.log(err.status, err.detail, err.fields);
     } else {
       console.log("not an API error:", err);
     }

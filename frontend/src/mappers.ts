@@ -21,8 +21,14 @@ export function digToItem(dig: TrailDig): ItemProps {
  return item;
 }
 
+// Digs from today on, soonest first.
 export function upcomingDigs(digs: TrailDig[], today: Date): TrailDig[] {
     return digs.filter((d) => new Date(d.date_time) >= today)
-               .sort((a, b) => a.date_time.localeCompare(b.date_time))
-               .slice(0, 5);
+               .sort((a, b) => a.date_time.localeCompare(b.date_time));
+}
+
+// Digs before today, most recent first.
+export function pastDigs(digs: TrailDig[], today: Date): TrailDig[] {
+    return digs.filter((d) => new Date(d.date_time) < today)
+               .sort((a, b) => b.date_time.localeCompare(a.date_time));
 }

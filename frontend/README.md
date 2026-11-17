@@ -47,12 +47,14 @@ Each phase focuses on one TypeScript concept.
 - [x] **Phase 5 — Real data on the home page.** Projets = Tags, Corvées = TrailDigs.
   *TS: generic hooks, loading/error/success union.*
   Backend: ~~make reads public~~ (done during Phase 3: digs `IsAuthenticatedOrReadOnly`, tags `AllowAny` for list, writes stay `IsAdminUser`). ~~Tag viewset list-only~~ (done: tags are managed in `/admin/`; `/tags/<id>/` no longer exists → 404, POST `/tags/` → 405).
-- [ ] **Phase 6 — Routing.** React Router, "Voir tout" list pages, `/digs/:id` detail page.
+- [x] **Phase 6 — Routing.** React Router, "Digs list page" list pages, `/digs/:id` detail page.
   *TS: typing route params (`string | undefined`).*
 - [ ] **Phase 7 — Create/edit form.** Create and edit a dig, show DRF field errors.
   *TS: form events, controlled inputs, naive-datetime helper.*
   Dates: `USE_TZ = False`, so DRF silently converts `…Z` to naive UTC (the `validate_date_time` check never fires). `toISOString()` would shift local times by the UTC offset: send the local time as typed, without `Z`. Decide whether to remove the dead validator.
+- [ ] **Phase 8 — Projets list page.** "Voir tout" on the Projets box (`/projets`); design to be decided. Box already hides "Voir tout" when no `href` is given.
 - [ ] **Later.** Generate types from `/api/schema/` with `openapi-typescript` and compare with the hand-written ones; TanStack Query; Vitest; nginx/Docker deploy; upgrade Node to 22.
+  Remove the unused `TrailDig.link` field: backend (model field + migration, serializer `fields`, tests/sample payloads that set it) and frontend (`link` in `TrailDig`/`NewTrailDig` types and `api.check.ts`).
 
 ### Exercises for later
 
