@@ -5,10 +5,11 @@ interface BoxProps {
     title: string;
     subtitle?: string;
     href?: string;
+    href2?: string;
     items: ItemProps[]
 }
 
-export default function Box({title, subtitle, href, items}: BoxProps) {
+export default function Box({title, subtitle, href, href2, items}: BoxProps) {
     return (
       <section className="box">
         <header className="box__header">
@@ -17,6 +18,7 @@ export default function Box({title, subtitle, href, items}: BoxProps) {
             {subtitle && <p>{subtitle}</p>}
           </div>
           {href && <Button href={href}>Voir tout</Button>}
+          {href2 && <Button href={href2}>Ajouter</Button>}
         </header>
         {items.length === 0 ? <p>Aucune donnée à afficher</p> : <div className="list"> {items.map((item) => <Item key={item.id} {...item} />)} </div>}
       </section>

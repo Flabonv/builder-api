@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { ApiError } from "../api.ts"
 import { useAuth } from "../auth/useAuth.ts";
 
@@ -9,20 +9,20 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const { login } = useAuth();
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();               // stop the browser from reloading the page
     setError(null);
 
-  try {
-    await login(email, password);
-    } catch (err: unknown) {
-        if (err instanceof ApiError) {
-            const message = err.fields.non_field_errors?.[0] ?? err.detail ?? "Connexion refusée.";
-            setError(message);
-        } else {
-            setError("Impossible de joindre le serveur.");
-        }
-    }
+    try {
+      await login(email, password);
+      } catch (err: unknown) {
+          if (err instanceof ApiError) {
+              const message = err.fields.non_field_errors?.[0] ?? err.detail ?? "Connexion refusée.";
+              setError(message);
+          } else {
+              setError("Impossible de joindre le serveur.");
+          }
+      }
   }
 
   return (

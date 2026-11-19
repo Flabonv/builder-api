@@ -1,5 +1,6 @@
+import type { DigFormValues } from "./components/DigForm";
 import type { ItemProps } from "./components/Item";
-import type { Tag, TrailDig } from "./types/api";
+import type { NewTrailDig, Tag, TrailDig, TrailDigDetail } from "./types/api";
 
 export function tagToItem(tag: Tag): ItemProps {
   return {
@@ -19,6 +20,28 @@ export function digToItem(dig: TrailDig): ItemProps {
     href: `/digs/${dig.id}`
  };
  return item;
+}
+
+export function digFormToPayload(form: DigFormValues) : NewTrailDig {
+  return {
+    title: form.title,
+    time_minutes: Number(form.time_minutes),
+    number_people: Number(form.number_people),
+    date_time: form.date_time,
+    tags: form.tags.map((n) => ({name: n})),
+    description: form.description
+  };
+}
+
+export function digToDigForm(dig: TrailDigDetail): DigFormValues {
+  return {
+    title: dig.title,
+    time_minutes: String(dig.time_minutes),
+    number_people: String(dig.number_people),
+    date_time: dig.date_time.slice(0, 16),
+    description: dig.description,
+    tags: dig.tags.map((t) => (t.name))
+  };
 }
 
 // Digs from today on, soonest first.
