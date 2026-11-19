@@ -65,6 +65,6 @@ Each phase focuses on one TypeScript concept.
 
 `_get_tags` looked tags up with `user=auth_user`, so non-admins couldn't attach admin-created tags, and `create()` saved the dig *before* that lookup failed (400 returned, dig kept). Fixed: tags are looked up by name only, and `create()`/`update()` run in `transaction.atomic()`. Covered by three tests in `test_traildig_api.py`.
 
-### Open decision (Phase 7): who can edit a dig?
+### Decision (Phase 7): who can edit a dig?
 
-Any logged-in user can currently `PUT`/`PATCH` any dig; only `DELETE` checks the owner (`TrailDigViewSet.destroy`). Decide whether edits should be owner-only too (same check in `update`, plus a test), or stay open to everyone.
+Decided 2026-11-19: **any logged-in user can edit any dig** (`PUT`/`PATCH`, as the backend already allows). Only `DELETE` stays owner-only (`TrailDigViewSet.destroy`). So no `can_edit` field is needed: the frontend shows "Modifier" to every logged-in user.

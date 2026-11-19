@@ -69,6 +69,16 @@ export const createTrailDig = (payload: NewTrailDig, token: string) =>
             body: payload,
         });
 
+export const updateTrailDig = (id: number, payload: Partial<NewTrailDig>, token: string) =>
+    apiFetch<TrailDigDetail>(
+      `/api/traildig/traildigs/${id}/`,
+      {
+        method: "PATCH",
+        token,
+        body: payload,
+      }
+    );
+
 export const login = (payload: LoginPayload) => apiFetch<AuthToken>(
     `/api/user/token/`,
     {
