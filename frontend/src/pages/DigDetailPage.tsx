@@ -1,7 +1,6 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import DigDetail from "../components/DigDetail";
 import { NOT_FOUND } from "../messages";
-
 
 export default function DigDetailPage() {
     const { id } = useParams();
@@ -10,7 +9,6 @@ export default function DigDetailPage() {
 
     return (
         <main className="portal">
-            <Link className="btn" to="/digs">Toutes les corvées</Link>
             <section className="box">
                 {(!isValidId) ? <h2>{NOT_FOUND}</h2> : <DigDetail id={idNumber}/>}
             </section>

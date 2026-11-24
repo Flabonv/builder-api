@@ -4,7 +4,8 @@ import HomePage from "./pages/HomePage";
 import DigDetailPage from "./pages/DigDetailPage";
 import DigsPage from "./pages/DigsPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import DigForm from "./components/DigForm";
+import DigCreationPage from "./pages/DigCreationPage";
+import DigUpdatePage from "./pages/DigUpdatePage";
 
 function Layout() {
   return (
@@ -23,8 +24,8 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="digs" element={<DigsPage />} />
           <Route path="digs/:id" element={<DigDetailPage />} />
-          <Route path="digs/new" element={<DigForm />} />
-          <Route path="digs/:id/edit" element={<DigForm />} />
+          <Route path="digs/new" element={<DigCreationPage />} />
+          <Route path="digs/:id/edit" element={<DigUpdatePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

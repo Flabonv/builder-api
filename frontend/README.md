@@ -52,6 +52,14 @@ Each phase focuses on one TypeScript concept.
 - [ ] **Phase 7 — Create/edit form.** Create and edit a dig, show DRF field errors.
   *TS: form events, controlled inputs, naive-datetime helper.*
   Dates: `USE_TZ = False`, so DRF silently converts `…Z` to naive UTC (the `validate_date_time` check never fires). `toISOString()` would shift local times by the UTC offset: send the local time as typed, without `Z`. Decide whether to remove the dead validator.
+  Done: `DigForm` (state object, `update<K extends keyof …>`, tag checkboxes, `onSubmit` prop), `digFormToPayload`/`digToDigForm`, `updateTrailDig` (PATCH), `DigCreationPage` (`/digs/new`), `DigUpdatePage` + `DigUpdate` (`/digs/:id/edit`), `useNavigate` after save, "Ajouter"/"Modifier" buttons.
+  Remaining:
+  - [ ] Field errors: `FieldErrors = Partial<Record<keyof DigFormValues | "non_field_errors", string[]>>` state, set from `err.fields` on a 400, a `FieldError` component under each input, `.field__error` CSS (not absolute). Test with a >255-char title or temporary `noValidate`.
+  - [ ] `submitting` flag on `DigForm` (disable "Soumettre" while saving); same exercise as LoginForm below.
+  - [ ] `Box`: rename `href2` (e.g. `addHref`); `DigsPage` still passes `""` instead of `undefined`.
+  - [x] `digToDigForm`: `date_time.slice(0, 16)` so `datetime-local` doesn't show seconds.
+  - [ ] Form styling (inputs stacked, labels/spacing) — it has no CSS yet.
+  - [ ] Backend: decide whether to delete the dead `validate_date_time` (`datetime-local` never sends `Z`).
 - [ ] **Phase 8 — Projets list page.** "Voir tout" on the Projets box (`/projets`); design to be decided. Box already hides "Voir tout" when no `href` is given.
 - [ ] **Later.** Generate types from `/api/schema/` with `openapi-typescript` and compare with the hand-written ones; TanStack Query; Vitest; nginx/Docker deploy; upgrade Node to 22.
   Remove the unused `TrailDig.link` field: backend (model field + migration, serializer `fields`, tests/sample payloads that set it) and frontend (`link` in `TrailDig`/`NewTrailDig` types and `api.check.ts`).
