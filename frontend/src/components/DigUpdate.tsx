@@ -21,7 +21,12 @@ export default function DigUpdate({ id }: { id: number }) {
         <>
           {dig.status === "loading" && <p>Chargement</p>}
           {dig.status === "error" && <h2>{dig.message}</h2>}
-          {dig.status === "success" && <DigForm onSubmit={submitUpdate} initial={digToDigForm(dig.data)}/> }
+          {dig.status === "success" &&
+            <>
+              <div className="box__title"><h2>Modifier la corvée</h2></div>
+              <DigForm onSubmit={submitUpdate} initial={digToDigForm(dig.data)}/>
+            </>
+          }
         </>
     );
 }

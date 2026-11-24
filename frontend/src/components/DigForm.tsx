@@ -60,60 +60,76 @@ export default function DigForm({initial, onSubmit}: DigFormProps) {
     }
 
     return (
-    <form onSubmit={handleSubmit}>
-        <input value={form.title}
-               required
-               placeholder="Titre"
-               aria-label="Titre"
-               onChange={(e) => update("title", e.target.value)}
-        />
-        <input value={form.time_minutes}
-               required
-               min="1"
-               type="number"
-               placeholder="Durée (minutes)"
-               aria-label="Durée"
-               onChange={(e) => update("time_minutes", e.target.value)}
-        />
-        <input value={form.number_people}
-               required
-               min="1"
-               type="number"
-               placeholder="Nombre de bénévoles"
-               aria-label="Nombre de bénévoles"
-               onChange={(e) => update("number_people", e.target.value)}
-        />
-        {tags.status === "loading" && <p>Chargement</p>}
-        {tags.status === "error" && <p>{tags.message}</p>}
-        {tags.status === "success" &&
-            <fieldset>
-                <legend>Projets</legend>
-                {tags.data.map((tag) => (
-                <label key={tag.id}>
-                    <input
-                            type="checkbox"
-                            checked={form.tags.includes(tag.name)}
-                            onChange={(e) => toggleTag(tag.name, e.target.checked)}
-                    />
-                    {tag.name}
-                </label>
-                ))}
-            </fieldset>
-        }
-        <input value={form.date_time}
-               required
-               type="datetime-local"
-               placeholder="Quand?"
-               aria-label="Quand?"
-               onChange={(e) => update("date_time", e.target.value)}
-        />
-        <textarea value={form.description}
-                  placeholder="Description..."
-                  aria-label="Description"
-                  onChange={(e) => update("description", e.target.value)}
-        />
-       <button className="btn" type="submit">Soumettre</button>
-       {error && <p role="alert">{error}</p>}
+    <form className="dig-form" onSubmit={handleSubmit}>
+        <label className="field">
+            <span className="field__label">Titre</span>
+            <input className="field__input"
+                   value={form.title}
+                   required
+                   onChange={(e) => update("title", e.target.value)}
+            />
+        </label>
+        <div className="field-row">
+            <label className="field">
+                <span className="field__label">Durée (minutes)</span>
+                <input className="field__input"
+                       value={form.time_minutes}
+                       required
+                       min="1"
+                       type="number"
+                       onChange={(e) => update("time_minutes", e.target.value)}
+                />
+            </label>
+            <label className="field">
+                <span className="field__label">Nombre de bénévoles</span>
+                <input className="field__input"
+                       value={form.number_people}
+                       required
+                       min="1"
+                       type="number"
+                       onChange={(e) => update("number_people", e.target.value)}
+                />
+            </label>
+        </div>
+        <label className="field">
+            <span className="field__label">Quand</span>
+            <input className="field__input"
+                   value={form.date_time}
+                   required
+                   type="datetime-local"
+                   onChange={(e) => update("date_time", e.target.value)}
+            />
+        </label>
+        <fieldset className="field">
+            <legend className="field__label">Projets</legend>
+            {tags.status === "loading" && <p className="field__hint">Chargement</p>}
+            {tags.status === "error" && <p className="field__hint">{tags.message}</p>}
+            {tags.status === "success" &&
+                <div className="tag-list">
+                    {tags.data.map((tag) => (
+                    <label className="tag-option" key={tag.id}>
+                        <input
+                                type="checkbox"
+                                checked={form.tags.includes(tag.name)}
+                                onChange={(e) => toggleTag(tag.name, e.target.checked)}
+                        />
+                        {tag.name}
+                    </label>
+                    ))}
+                </div>
+            }
+        </fieldset>
+        <label className="field">
+            <span className="field__label">Description</span>
+            <textarea className="field__input field__input--textarea"
+                      value={form.description}
+                      onChange={(e) => update("description", e.target.value)}
+            />
+        </label>
+        <div className="dig-form__actions">
+            <button className="btn" type="submit">Soumettre</button>
+            {error && <p className="dig-form__error" role="alert">{error}</p>}
+        </div>
     </form>
     );
 };

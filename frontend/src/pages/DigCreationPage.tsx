@@ -17,7 +17,10 @@ export default function DigCreationPage() {
         <main className="portal">
         {
             state.status !== "authenticated" ? <p>Must be authenticated</p> :
-            <DigForm onSubmit={submitCreation} />
+            <section className="box">
+                <div className="box__title"><h2>Nouvelle corvée</h2></div>
+                <DigForm onSubmit={submitCreation} />
+            </section>
         }
         </main>
     );

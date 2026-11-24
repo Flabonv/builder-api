@@ -2,7 +2,7 @@ import { getTrailDig } from "../api";
 import { useApi } from "../hooks/useApi";
 import type { TrailDigDetail } from "../types/api";
 import { useAuth } from "../auth/useAuth";
-import { Link } from "react-router";
+import Button from "./Button";
 
 function DigDetailData({id, title, date_time, time_minutes, number_people, tags, description } : TrailDigDetail) {
     const { state } = useAuth();
@@ -10,18 +10,46 @@ function DigDetailData({id, title, date_time, time_minutes, number_people, tags,
         weekday: "long", day: "numeric", month: "long",
         hour: "2-digit", minute: "2-digit",
     });
+    const duration = `${Math.floor(time_minutes / 60)} h ${String(time_minutes % 60).padStart(2, "0")}`;
 
     return (
-        <div>
-            <h2>Titre: {title}</h2>
-            <p>Quand: {when}</p>
-            <p>Durée: {Math.floor(time_minutes / 60)}h{String(time_minutes % 60).padStart(2, "0")}</p>
-            <p>Nombre de bénévoles: {number_people}</p>
-            <p>Projet : </p>
-            <ul>{tags.map((tag) => <li key={tag.id}>{tag.name}</li>)}</ul>
-            <p>Description: {description}</p>
-            {(state.status === "authenticated") && <Link className="btn" to={`/digs/${id}/edit`}>Modifier</Link> }
-        </div>
+        <>
+            <header className="box__header">
+                <div className="box__title">
+                    <h2>{title}</h2>
+                    <p className="detail__when">{when}</p>
+                </div>
+                {state.status === "authenticated" &&
+                    <div className="box__actions">
+                        <Button href={`/digs/${id}/edit`} arrow={false}>Modifier</Button>
+                    </div>
+                }
+            </header>
+
+            <dl className="detail-facts">
+                <div className="detail-fact">
+                    <dt className="field__label">Durée</dt>
+                    <dd>{duration}</dd>
+                </div>
+                <div className="detail-fact">
+                    <dt className="field__label">Bénévoles</dt>
+                    <dd>{number_people}</dd>
+                </div>
+                <div className="detail-fact">
+                    <dt className="field__label">Projets</dt>
+                    <dd className="detail-fact__tags">
+                        {tags.length === 0
+                            ? <span className="field__hint">Aucun</span>
+                            : tags.map((tag) => <span className="tag-pill" key={tag.id}>{tag.name}</span>)}
+                    </dd>
+                </div>
+            </dl>
+
+            <section className="detail__section">
+                <h3 className="field__label">Description</h3>
+                <p className="detail__desc">{description || "Aucune description."}</p>
+            </section>
+        </>
     );
 }
 
